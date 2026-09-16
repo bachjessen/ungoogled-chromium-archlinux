@@ -20,7 +20,7 @@ _system_clang=1
 _uc_usr=ungoogled-software
 _uc_ver=153.0.8010.47-1
 pkgdesc="A lightweight approach to removing Google web service dependency"
-arch=('x86_64')
+arch=('aarch64')
 url="https://github.com/ungoogled-software/ungoogled-chromium"
 license=('BSD-3-Clause')
 depends=(
@@ -111,7 +111,7 @@ source=(https://commondatastorage.googleapis.com/chromium-browser-official/chrom
         enable-widevine-arm64.patch
         use-oauth2-client-switches-as-default.patch
         glibc-2.42-baud-rate-fix.patch)
-sha256sums=('645f64566cfbb780747430d53ff3656f03639f89fed9544c1eadd4c17e7b1c82'
+sha256sums=('a4a2d5c40cb965b958c90e9fc1ce2ea12b3a1d3ea242ebd37bdff3e766bf47c2'
             '922a6c884a0842c3c0e7fcd30a873acae00f439843c63ea7332d2fe04eef8aec'
             '213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a'
             '11a96ffa21448ec4c63dd5c8d6795a1998d8e5cd5a689d91aea4d2bdd13fb06e'
@@ -136,7 +136,7 @@ sha256sums=('645f64566cfbb780747430d53ff3656f03639f89fed9544c1eadd4c17e7b1c82'
 
 if (( _manual_clone )); then
   source[0]=fetch-chromium-release
-  sha256sums[0]='2e2f36e3cd1ebc4ad57fd310774a5e5e9db77883d5f9374fedeaabd3c103b819'
+  sha256sums[0]='a4a2d5c40cb965b958c90e9fc1ce2ea12b3a1d3ea242ebd37bdff3e766bf47c2'
   makedepends+=('python-httplib2' 'python-pyparsing' 'python-six' 'npm' 'rsync')
 fi
 
@@ -337,6 +337,8 @@ build() {
   fi
 
   local _flags=(
+    'target_cpu="arm64"'
+    'host_cpu="arm64"'
     'custom_toolchain="//build/toolchain/linux/unbundle:default"'
     'host_toolchain="//build/toolchain/linux/unbundle:default"'
     'is_official_build=true' # implies is_cfi=true on x86_64

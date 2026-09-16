@@ -28,6 +28,35 @@ export PATH+=":$PWD/depot_tools" DEPOT_TOOLS_UPDATE=0
 #export VPYTHON_BYPASS='manually managed python not supported by chrome operations'
 
 git clone -b $VERSION --depth=2 https://chromium.googlesource.com/chromium/src
+
+# Chromium does not publish the gperf CIPD package for Linux ARM64.
+# Skip it on ARM64; prepare() links the native /usr/bin/gperf instead.
+if [[ $(uname -m) == aarch64 ]]; then
+  python - <<'PYDEPS'
+from pathlib import Path
+
+path = Path("src/DEPS")
+text = path.read_text()
+
+old = """      'condition': 'host_os == "linux" and non_git_source',
+      'dep_type': 'cipd',
+  },
+
+  # Always download Linux x64 package regardless of host OS for RBE workers."""
+
+new = """      'condition': 'host_os == "linux" and host_cpu != "arm64" and non_git_source',
+      'dep_type': 'cipd',
+  },
+
+  # Always download Linux x64 package regardless of host OS for RBE workers."""
+
+if old not in text:
+    raise SystemExit("Expected gperf CIPD dependency block not found")
+
+path.write_text(text.replace(old, new, 1))
+PYDEPS
+fi
+
 gclient sync --no-history --nohooks
 src/build/util/lastchange.py -o src/build/util/LASTCHANGE
 src/build/util/lastchange.py -m GPU_LISTS_VERSION \
